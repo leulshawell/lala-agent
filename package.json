@@ -1,0 +1,25 @@
+{
+  "name": "lala-agent",
+  "version": "1.0.0",
+  "description": "an agent framework",
+  "license": "ISC",
+  "author": "leulshawell",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "tsx ./src/cli/app.tsx",
+    "test": "tsx ./src/agent.test.ts"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "ink": "^6.8.0",
+    "ink-select-input": "^6.2.0",
+    "ink-spinner": "^5.0.0",
+    "ollama": "^0.6.3",
+    "react": "^19.2.4"
+  }
+}
