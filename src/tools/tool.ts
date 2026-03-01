@@ -72,6 +72,13 @@ export const action_not_found_error = (tool_name: string,act: string): ToolCallV
     }
 }
 
+export const  tool_not_found_error = (tool_name: string): ToolCallValidationResult =>{
+    return { 
+        success: false, 
+        error: `Tool "${tool_name}" is not found. in your registery`, 
+        suggested_fix: "Check your **Toool List** an try again" 
+    }
+}
 
 export class Tool<N extends string, A extends _Actions> {
     name: N

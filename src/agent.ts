@@ -1,7 +1,7 @@
 import { readFileSync } from "fs"
 import { Model } from "./model"
 import { WorkSpace } from "./workspace"
-import { Actions, Tool, ToolCallResult, ToolCallValidationResult } from "./tools/tool"
+import { action_not_found_error, Actions, Tool, tool_not_found_error, ToolCallResult, ToolCallValidationResult } from "./tools/tool"
 import path from "path"
 import { Channel } from "./channel"
 
@@ -9,81 +9,62 @@ import { Channel } from "./channel"
 export class Agent<P>{
     workspace: WorkSpace
     model: Model<P>
-    master: string
     channel: Channel
     tools: Map<string, Tool<string, any>>
-    system_prompt: string
 
     constructor(model_client: Model<P>, channel: Channel, workspace: WorkSpace, tools: Tool<string, any>[]){
         this.model = model_client
         this.workspace = workspace
         this.channel = channel
         this.tools = new Map()
-        this.system_prompt = this.generate_master_prompt(tools)
+        this.model.system_pr = this.generate_master_prompt(tools)
 
         tools.forEach(tool => {
             this.tools.set(tool.name, tool)
         });
 
-        this.master = this.generate_master_prompt(tools)
 
     }
 
 
     async start(){
         if(await this.channel.setup()){
-            const request =  {
-                role: "user",
-                type: "message",
-                id: "",
-                next_call_id: this.workspace.get_next_call_id(),
-                text: "" //place holder for the prompt 
-            };
             while (true){
+                const req_id = this.workspace.get_next_call_id()
+                const prompt = await this.channel.get_text_input( req_id, "Ready >>")
 
-                const prompt = await this.channel.get_text_input( request.id, "Ready >>")
+                const message = this.generate_user_promp(prompt, req_id, this.workspace.get_next_call_id())
+                const res_ = this.model.next(req_id,  message, this.workspace)
 
-                const message = this.generate_user_promp(prompt)
-                const res_ = this.model.next(this.system_prompt, message, this.workspace)
-
-                this.channel.message(request.id, prompt, ">>", "green")
+                this.channel.message(req_id, prompt, ">>", "green")
                 await this.channel.loading("thinking", res_)
                 const res = await res_
 
-                this.master = `${message}\n${JSON.stringify(res)}`
 
-                this.channel.message(request.id, JSON.stringify(res), "[debug]", "cyan") //set the response object in the channel for debugging
+                this.channel.message(req_id, JSON.stringify(res), "[debug]", "cyan") //set the response object in the channel for debugging
 
                 if(res.type === "message"){
-                    this.channel.message(request.id, res.text, ">>", "yellow")
+                    this.channel.message(req_id, res.text, ">>", "yellow")
                     continue
                 }
 
+                //this is the key inifinite loop that keeps going unless the model want to interact with the user
+                //or sends un invalid message that doesn't follow the sytem prompt
+                //the hope is the model won't do both of them unless neccessary with will keep it fully automous
                 while(true){
-                    const {name} = res
+                    const {name, action, params} = res
                     this.channel.message(res.call_id, res.text, `[${name}]`, "red") //show the tool call
-                    
-                    const tool = this.tools.get(name)
-                    if(!tool)
-                        throw new Error("Model attempted to use unregistered tool")
-                    
-                    const action = tool.actions[res.action]
-                    const isValid  = tool.actions[res.action].validator(res.params, this.workspace)
-                    
-                    const result =  isValid.success? await action.handler(res.params, this.workspace): isValid
 
-                    const pr = `${this.master}\n${JSON.stringify(result)}`
+                    const result = await this.call_tool(name, action, params)
                     
-                    const res2_ = this.model.next(this.system_prompt, pr, this.workspace)
+                    const req_id = this.workspace.get_next_call_id()
+                    
+                    const res2_ = this.model.next(req_id, JSON.stringify(result), this.workspace)
                     await this.channel.loading("thinking", res2_)
                     const res2 = await res2_
 
-                    this.channel.message(request.id, JSON.stringify(res2), "[debug]", "cyan") //set the response object in the channel for debugging
-                    
-                    this.master = `${prompt}\n${JSON.stringify(res2)}`
-
                     if(res2.type === "message"){
-                        this.channel.message(request.id, res2.text, ">>", "yellow")
+                        this.channel.message(req_id, res2.text, ">>", "yellow")
                         break
                     }
                 }
@@ -99,21 +80,12 @@ export class Agent<P>{
 
     async call_tool(tool_name: string, act: string, p: any): Promise<ToolCallResult | ToolCallValidationResult>{
         const tool = this.tools.get(tool_name)
-        if(!tool) return {
-            success: false,
-            error: `Tool "${tool_name}" is not found. in your registery`,
-            suggested_fix: "Check your **Toool List** an try again"
-        }
+        if(!tool) return tool_not_found_error(tool_name) 
 
         const action = tool.actions[act]
 
         if(!action) {
-            return {
-                success: false, 
-                error_type: "tool_call_error", 
-                error: `tool "${tool_name}" doen't provide action "${act}"`,
-                suggested_fix: `Check the action definition for tool "${tool_name}" and try again`
-            }
+            return action_not_found_error(tool_name, act)
         }
 
         const isValid = action.validator(p, this.workspace)
@@ -122,8 +94,16 @@ export class Agent<P>{
         
     }
 
-    generate_user_promp(prompt: string){
-        return `{ "role": "user", "type": "message", "text": ${prompt}, "next_call_id": "${this.workspace.get_next_call_id()}" }`
+    generate_user_promp(prompt: string, req_id: string, next_call_id: string){
+        const request =  {
+                role: "user",
+                type: "message",
+                id: req_id,
+                next_call_id,
+                text: prompt
+            };
+
+        return JSON.stringify(request)
     }
 
     generate_master_prompt(tools: Tool<string, any>[]): string{

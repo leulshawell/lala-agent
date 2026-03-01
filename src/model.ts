@@ -20,12 +20,24 @@ type ResponseValidationResult = {success: true, res: ModelResponse} | {success: 
 
 export abstract class Model<P>{
     provider: P
+    system_prompt?: string
+    context: string
 
     constructor(pr: P){
-        this.provider   = pr
+        this.provider = pr
+        this.context = ""
     }
 
-    abstract next(system: string, prompt: string, ws: WorkSpace): Promise<ModelResponse>;
+    set system_pr(prompt: string){
+        this.system_prompt = prompt
+    }
+
+    abstract next(req_id: string, prompt: string, ws: WorkSpace): Promise<ModelResponse>;
+
+    add_to_context(prompt: string){
+        this.context = this.context.concat(`\n${prompt}`)
+    }
+
 
     static validate_res(res: string): ResponseValidationResult{
         try {
@@ -61,27 +73,29 @@ export class OllamaModelProvider extends Model<Ollama>{
         this.model_name = cfg.model_name
     }
     
-    async next(system: string, _prompt: string, ws: WorkSpace): Promise<ModelResponse>{
+    async next(req_id: string, _prompt: string, ws: WorkSpace): Promise<ModelResponse>{
         let prompt = _prompt
         while(true) {
             const res = await this.provider.generate(
                 {
                     model: this.model_name,
                     prompt,
-                    system,
+                    system: this.system_prompt,
                     stream: false,
                     think: false
                 }
             )
 
             const isValid = Model.validate_res(res.response)
-            if(isValid.success) 
-                return isValid.res!
-            else 
-                {
-                    ws.channel.message("", isValid.error, "[debug]", "blue")
-                    prompt = isValid.error
-                }
+            if(isValid.success) {
+                //add both request an response to model context
+                this.add_to_context(prompt)
+                this.add_to_context(JSON.stringify(res))
+                return isValid.res
+            }
+            //if model respone was not in valid. the prompt the model with the error the valdation message 
+            ws.channel.message("", isValid.error, "[debug]", "blue")
+            prompt = `The message you just sent doesn't follow the JSON response schema we agreed upon.\nError: ${isValid.error}.\nFix it and try again`
         }
     }
 }
