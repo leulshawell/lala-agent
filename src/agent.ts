@@ -1,8 +1,13 @@
 import { readFileSync } from "fs"
 import { Model } from "./model"
 import { WorkSpace } from "./workspace"
-import { action_not_found_error, Actions, Tool, tool_not_found_error, ToolCallResult, ToolCallValidationResult } from "./tools/tool"
-import path from "path"
+import { 
+    action_not_found_error, 
+    Tool, 
+    ToolCallResult, 
+    ToolCallValidationResult ,
+    tool_not_found_error,  } from "./tool"
+import * as path from "path"
 import { Channel } from "./channel"
 
 
@@ -12,7 +17,7 @@ export class Agent<P>{
     channel: Channel
     tools: Map<string, Tool<string, any>>
 
-    constructor(model_client: Model<P>, channel: Channel, workspace: WorkSpace, tools: Tool<string, any>[]){
+    constructor(model_client: Model<P>, channel: Channel, workspace: WorkSpace, tools: readonly Tool<string, any>[]){
         this.model = model_client
         this.workspace = workspace
         this.channel = channel
@@ -50,7 +55,7 @@ export class Agent<P>{
 
                 //this is the key inifinite loop that keeps going unless the model want to interact with the user
                 //or sends un invalid message that doesn't follow the sytem prompt
-                //the hope is the model won't do both of them unless neccessary with will keep it fully automous
+                //the hope is the model won't do both of those things unless neccessary which will keep it fully automous
                 while(true){
                     const {name, action, params} = res
                     this.channel.message(res.call_id, res.text, `[${name}]`, "red") //show the tool call
@@ -63,6 +68,7 @@ export class Agent<P>{
                     await this.channel.loading("thinking", res2_)
                     const res2 = await res2_
 
+                    //this means model wants to send the user a message so tool call loop breaks
                     if(res2.type === "message"){
                         this.channel.message(req_id, res2.text, ">>", "yellow")
                         break
@@ -71,7 +77,6 @@ export class Agent<P>{
 
             }
         }else {
-            //check why setup failed
             console.error(`Channel setup failed\n ${this.channel.setup_result || "Unknown reason"}`)
             process.exit()
         }
@@ -106,7 +111,7 @@ export class Agent<P>{
         return JSON.stringify(request)
     }
 
-    generate_master_prompt(tools: Tool<string, any>[]): string{
+    generate_master_prompt(tools: readonly Tool<string, any>[]): string{
         const sol  = readFileSync(path.resolve(process.cwd(), "SOL.txt")).toString()
         const ins  = readFileSync(path.resolve(process.cwd(), "INSTRUCTIONS.txt")).toString()
         const tool  = readFileSync(path.resolve(process.cwd(), "TOOLS.txt")).toString()

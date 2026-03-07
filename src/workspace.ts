@@ -2,7 +2,7 @@
 
 import path from "path"
 import { Channel } from "./channel"
-import { Tool } from "./tools/tool"
+import { Tool } from "./tool"
 import Path from "path"
 
 

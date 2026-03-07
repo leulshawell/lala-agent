@@ -1,26 +1,22 @@
 import { WorkSpace } from "../workspace"
-import { Actions, param_not_found_error, Tool, ToolCallHandler, ToolCallValidator } from "./tool"
+import { Actions, param_not_found_error, Tool, ToolCallHandler, ToolCallValidator } from "../tool"
 
 
 type  AskActions = {
     choose: {
-        params: {
-            question: string,
-            options: string[]
-        }
+        question: string,
+        options: string[]
     },
     open: {
-        params: {
-            question: string,
+        question: string,
         }
-    }
 }
 
 
 
 
 const askOpenHandler: ToolCallHandler<AskActions["open"]> = async (params, ws) => {
-    const ans = await ws.channel.get_text_input(ws.session.get_init_prompt(), params["question"])
+    const ans = await ws.channel.get_text_input(ws.session.get_init_prompt(), params.question)
     return {success: true, out_type: "user_response", result: ans}
 }
 

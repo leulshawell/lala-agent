@@ -1,17 +1,32 @@
-Example usage
+# lala-Agent
 
+This is a light weight personal llm agent mainly for educational purposes. 
+
+
+Default Usage
+```bash
+git clone https://github.com/leulshawell/lala-agent
+npm install -g ./lala-agent/cli
+
+lala-agent
+```
+
+Developer Example usage
+First install the dev version which provides tool dev and agent config options
+```bash
+git clone https://github.com/leulshawell/lala-agent
+npm install ./lala-agent/dev
+rm ./lala-agent #Unless you want the source
+
+```
 ```typescript
 
-import { Agent } from "../agent";
-import {  OllamaModelProvider } from "../model";
-import { WorkSpace } from "../workspace";
+import { Agent, OllamaModelProvider, WorkSpace } from "lala-agent";
 
-import { TUI } from "./tui";
+import { TUI } from "lala-agent/channels";
 
 //import some tools for the agent to use
-import FileTool from "../tools/file-tool"; //used for file ops on disk
-import TodoTool from "../tools/todo-tool"; //used to create and manage todolist
-import AskTool from "../tools/ask-tool";   //used to ask the user questions
+import {FileTool, TodoTool, AskTool} from "lala-agent/tools"; 
 
 const MODEL_URI = process.env.MODEL_URI 
 

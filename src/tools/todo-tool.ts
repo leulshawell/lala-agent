@@ -1,5 +1,5 @@
 import { WorkSpace } from "../workspace";
-import { Actions, param_not_found_error, Tool, ToolCallHandler, ToolCallValidator } from "./tool";
+import { Actions, param_not_found_error, Tool, ToolCallHandler, ToolCallValidator } from "../tool";
 
 type Status =  "Pending" | "Completed" | "In-progress"
 

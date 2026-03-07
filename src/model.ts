@@ -92,10 +92,11 @@ export class OllamaModelProvider extends Model<Ollama>{
                 this.add_to_context(prompt)
                 this.add_to_context(JSON.stringify(res))
                 return isValid.res
+            }else {
+                //if model respone was not in valid. the prompt the model with the error the valdation message 
+                ws.channel.message("", isValid.error, "[debug]", "blue")
+                prompt = `The message you just sent doesn't follow the JSON response schema we agreed upon.\nError: ${isValid.error}.\nFix it and try again`
             }
-            //if model respone was not in valid. the prompt the model with the error the valdation message 
-            ws.channel.message("", isValid.error, "[debug]", "blue")
-            prompt = `The message you just sent doesn't follow the JSON response schema we agreed upon.\nError: ${isValid.error}.\nFix it and try again`
         }
     }
 }

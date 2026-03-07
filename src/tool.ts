@@ -1,13 +1,11 @@
-import { WorkSpace } from "../workspace"
+import { WorkSpace } from "./workspace"
 
 export type ToolParam = {name: string, desc: string, required: boolean}
 
 
 
 type _Action = {
-    params: {
         [k: string]: boolean | string | number | string[]
-    }
 }
 
 
@@ -16,8 +14,8 @@ type _Actions = {
     [k: string]: _Action
 }
 
-export type ToolCallHandler<A extends _Action> = (p: A["params"], ws: WorkSpace)=>Promise<ToolCallResult>
-export type ToolCallValidator<A extends _Action> = (p: A["params"], ws: WorkSpace)=>ToolCallValidationResult
+export type ToolCallHandler<A extends _Action> = (p: A, ws: WorkSpace)=>Promise<ToolCallResult>
+export type ToolCallValidator<A extends _Action> = (p: A, ws: WorkSpace)=>ToolCallValidationResult
 
 
 type ActionEntry<
@@ -27,7 +25,7 @@ type ActionEntry<
   handler: ToolCallHandler<A>
   validator: ToolCallValidator<A>
   params: {
-    [Act in keyof A["params"]]: {desc: string, required: boolean}
+    [Act in keyof A]: {desc: string, required: boolean}
   }
 }
 
@@ -63,7 +61,7 @@ export const param_not_found_error = (tool_name: string, act: string, param: str
 }
 
 
-export const action_not_found_error = (tool_name: string,act: string): ToolCallValidationResult=>{
+export const action_not_found_error = (tool_name: string, act: string): ToolCallValidationResult=>{
     return {
         success: false,
         error_type: "tool_call_error", 
@@ -93,12 +91,12 @@ export class Tool<N extends string, A extends _Actions> {
 
     get_definition(): string {
         const action_defs = Object.keys(this.actions).map((k)=>{
-            const act = this.actions[k]
+            const act = this.actions[k]!
             return JSON.stringify({
                 name: k, 
                 description: act.desc,  
                 params: [Object.keys(act.params).map(pk=>{
-                    const param = act.params[pk]
+                    const param = act.params[pk]!
                     return JSON.stringify({
                         name: pk,
                         description: param.desc,

@@ -1,5 +1,5 @@
 export type ChoiceInputItem = {value: string, label: string}
-export type SetupResult = {status: "success" | "failed", time_stamp: Date, fail_reason?: string}
+export type SetupResult = {success: true,  time_stamp: Date} | {success: false, time_stamp: Date, fail_reason: string}
 
 export interface Channel {
     setup_result?: SetupResult

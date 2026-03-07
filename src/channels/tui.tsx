@@ -1,3 +1,4 @@
+//This is a terminal channel. It lets the user interact with the agent using the terminal.
 import {render, Box, Text, useInput, Newline, useStdout} from "ink"
 import SelectInput from  "ink-select-input"
 import Spinner from "ink-spinner"
@@ -33,8 +34,8 @@ export class TUI implements Channel {
     }
 
     async setup() {
-        // console.clear()
-        this.setup_result = {status: "success", time_stamp: new Date()}
+        console.clear()
+        this.setup_result = {success: true, time_stamp: new Date()}
         return true
     }
 

@@ -1,25 +1,20 @@
 import { writeFile, mkdir } from "fs/promises"
 import { WorkSpace } from "../workspace"
-import { ToolCallResult, Tool, Actions, ToolCallHandler, ToolCallValidator, param_not_found_error } from "./tool"
+import { ToolCallResult, Tool, Actions, ToolCallHandler, ToolCallValidator, param_not_found_error } from "../tool"
 import { readFile } from "fs/promises"
 
 
 type FileAction = {
     read: {
-        params: {
-            path: string
-        }
+        path: string
     },
     write: {
-        params: {
-            path: string,
-            content: string,
-        }
+        
+        path: string,
+        content: string,
     },
     create_dir: {
-        params: {
             path: string
-        }
     },
 }
 
