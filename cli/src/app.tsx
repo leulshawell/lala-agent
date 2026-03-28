@@ -1,18 +1,13 @@
 import "dotenv/config"
+import { Agent, WorkSpace } from "lala-agent-core";
+import {  OllamaModelProvider } from "lala-agent-core/dist/model.js";
+import {FileTool, AskTool, TodoTool, BashTool} from "lala-agent-core/dist/tools/index.js";
+import {Ollama} from "ollama"
 
-import { Agent } from "../agent";
-import {  OllamaModelProvider } from "../model";
-import FileTool from "../tools/file-tool";
-import TodoTool from "../tools/todo-tool";
-import { WorkSpace } from "../workspace";
-import { TUI } from "../channels/tui";
-import AskTool from "../tools/ask-tool";
+import { TUI } from "./tui.js";
 
 
-
-
-
-const MODEL_URI = process.env.MODEL_URI
+const MODEL_URI = process.env.MODEL_URI || ""
 
 //create a terminal channel
 const tui = new TUI() 
@@ -26,7 +21,7 @@ const model_client = new OllamaModelProvider({host: MODEL_URI, model_name: "qwen
 const tools = [FileTool, TodoTool, AskTool] as const
 
 //create the agent
-export const agent = new Agent(model_client, tui, ws, tools)
+export const agent: Agent<Ollama> = new Agent(model_client, tui, ws, tools)
 
 
 //start the agent main loop

@@ -1,4 +1,4 @@
-import { WorkSpace } from "./workspace"
+import { WorkSpace } from "./workspace.js"
 
 export type ToolParam = {name: string, desc: string, required: boolean}
 

@@ -1,0 +1,62 @@
+**TOOLS**
+This are the tools you can available for you to get things done. Each tool has the following properties
+
+name: name of the tool. Use it as a name of the tool you want to call
+desciption: Descripes the tool
+params: Parameters that passed to that tool. Some params are required for the tool to work and they will have required: field set to true. name of a param is to be used on tool call. And descrition tells you what that param is for
+
+Example tool definition
+    {
+        "type": "tool_definition,
+        "role": "developer",
+        "name": "file",
+        "actions": {
+            "name": "write",
+            "params": [
+                {"name": "path", "descrition": "The path where the file is to be written on disk", "required": "true"},
+                {"name": "content", "descrition": "Content to be written to file", "required": "true"},
+                {"name": "content_length", "descrition": "Character length of the content to be written.", "required": "false"}
+            ]
+        }
+    }
+
+Example tool call
+    {
+        "type": "tool_call",
+        "call_id": "call_id"
+        "name": "file",
+        "action": "write"
+        "text": "Writing example javascript code in index.html",
+        "params": {"path", "./index.html", "content": "<!DOCTYPE html>\n<html>\n\t<head></head>\n\t<body>\n\t\t<h2>Hello World!</h2>\n\t</body>\n</html>"},
+    }
+
+Tool Call requests have responses after the tool is called. It will have the following properties
+
+success: wheather or not the tool call was successfull. true if so.
+result:  The output displayed after the tool run and exited. Only if success is true
+out_type: Can be "user_response" or "std_out". "user_response" means the tool you called got a reponse from the user example using the Questioner tool to ask the user for inputs. "std_out" means the tool run a program and you are getting the terminal output
+err:  The error message if the tool call failed. Only if success is false
+err_type: "tool_call_error" means the error is the way you formatted the tool call request or "execution_error" means the tool call formatting was fine but the tool execution with a non 0 exit code.
+suggested_fix: any fixs the user might suggest
+
+Example tool call (Incorrect)
+    {
+        "type": "tool_call",
+        "call_id": "call-id"
+        "name": "file",
+        "action": "write"
+        "params": {"content": "<!DOCTYPE html>\n<html>\n\t<head></head>\n\t<body>\n\t\t<h2>Hello World!</h2>\n\t</body>\n</html>"}
+    }
+
+Example tool call error response
+    {
+        "type": "tool_call_result",
+        "call_id: "call-1232"
+        "role": "developer"
+        "name": "file",
+        "action": "write"
+        "success: "false",
+        "error_type": "tool_call_error",
+        "error": "path parameter is required for file_write tool."
+        "suggested_fix": "please add the path where you want to file to be writen unded the path parameter"
+    }

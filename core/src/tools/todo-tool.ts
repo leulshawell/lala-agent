@@ -1,26 +1,27 @@
-import { WorkSpace } from "../workspace";
-import { Actions, param_not_found_error, Tool, ToolCallHandler, ToolCallValidator } from "../tool";
+import { WorkSpace } from "../workspace.js"
+import {
+    Tool, 
+    param_not_found_error, 
+    type Actions, 
+    type ToolCallHandler, 
+    type ToolCallResult, 
+    type ToolCallValidator 
+} from "../tool.js"
 
 type Status =  "Pending" | "Completed" | "In-progress"
 
 type TodoToolActions = {
     read: {
-        params: {
-            name: string
-        }
+        name: string
     }
     change_status: {
-        params: {
-            name: string
-            task: string
-            status: Status
-        }
+        name: string
+        task: string
+        status: Status
     },
     create: {
-        params: {
-            name: string,
-            tasks: string[]
-        }
+        name: string,
+        tasks: string[]
     }
 
 }

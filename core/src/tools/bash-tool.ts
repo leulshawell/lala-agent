@@ -1,6 +1,13 @@
+import { WorkSpace } from "../workspace.js"
+import {
+    Tool, 
+    param_not_found_error, 
+    type Actions, 
+    type ToolCallHandler, 
+    type ToolCallResult, 
+    type ToolCallValidator 
+} from "../tool.js"
 
-import { WorkSpace } from "../workspace"
-import { ToolCallResult, Tool, Actions, ToolCallHandler, ToolCallValidator, param_not_found_error } from "../tool"
 import {spawn} from "child_process"
 
 
@@ -22,7 +29,9 @@ const execHandler: ToolCallHandler<BashAction["exec"]> = async (params, ws): Pro
     const procEnv: Record<string, string> = {}
     env?.forEach((var_)=>{
         const [k, v] = var_.split("=")
-        procEnv[k] = v
+        if(k && v){
+            procEnv[k] = v
+        }
     })
 
     const ans = await ws.channel.get_choice_input("", `bash: ${command} ${args.join(" ")} cwd: ${cwd} env: ${env}`, [{label: "Yes", value: "yes"}, {label: "yes", value: "no"}])

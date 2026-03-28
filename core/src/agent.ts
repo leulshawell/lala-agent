@@ -1,14 +1,14 @@
 import { readFileSync } from "fs"
-import { Model } from "./model"
-import { WorkSpace } from "./workspace"
+import { Model } from "./model.js"
+import { WorkSpace } from "./workspace.js"
 import { 
     action_not_found_error, 
     Tool, 
-    ToolCallResult, 
-    ToolCallValidationResult ,
-    tool_not_found_error,  } from "./tool"
+    type ToolCallResult, 
+    type ToolCallValidationResult ,
+    tool_not_found_error,  } from "./tool.js"
 import * as path from "path"
-import { Channel } from "./channel"
+import type { Channel } from "./channel.js"
 
 
 export class Agent<P>{
@@ -112,7 +112,7 @@ export class Agent<P>{
     }
 
     generate_master_prompt(tools: readonly Tool<string, any>[]): string{
-        const sol  = readFileSync(path.resolve(process.cwd(), "SOL.txt")).toString()
+        const sol  = readFileSync(path.resolve(process.cwd(), "SOUL.txt")).toString()
         const ins  = readFileSync(path.resolve(process.cwd(), "INSTRUCTIONS.txt")).toString()
         const tool  = readFileSync(path.resolve(process.cwd(), "TOOLS.txt")).toString()
 
