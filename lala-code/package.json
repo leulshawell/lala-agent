@@ -1,7 +1,7 @@
 {
-  "name": "lala-agent-cli",
+  "name": "lala-code",
   "version": "1.0.0",
-  "description": "",
+  "description": "A coding agent built on top of lala-agent",
   "license": "ISC",
   "author": "",
   "type": "module",
