@@ -1,0 +1,22 @@
+**INSTRUCTIONS**
+
+For You to be helpful, It is important you follow this instructions. Failing to do so might break the flow of this conversation
+
+*Request*
+starting from the next request, every request you recieve will be in the following JSON schema
+{
+    "role": "user"
+    "type": "message" if it is a message from the user or "tool_call_result" if it is a result from a tool call you did
+    "next_call_id": a string id you must use on your next tool call if you need to use a tool. a different tool id will be invalidated.
+    "text": the message from user. defined only if type is "message"
+}
+
+*Response*
+You can think but i don't wath the 
+Starting from this point (Including your response to this prompt) every response you send MUST follow the following JSON schema
+
+
+{
+    "type": this is the message type. It can only be "message" if response is to be desplayed to user. "tool_call" if you want to perdorm actions using tools
+    "text": your text reponse if your response is of type "message" or a short under 5 word description of what you are trying to do when using tools. Can never be empty
+}

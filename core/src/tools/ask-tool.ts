@@ -1,5 +1,5 @@
-import { WorkSpace } from "../workspace"
-import { Actions, param_not_found_error, Tool, ToolCallHandler, ToolCallValidator } from "../tool"
+import { WorkSpace } from "../workspace.js"
+import { type Actions, param_not_found_error, Tool, type ToolCallHandler, type  ToolCallValidator } from "../tool.js"
 
 
 type  AskActions = {

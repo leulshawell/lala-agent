@@ -1,8 +1,7 @@
 //handles model memories, files, and more
 
 import path from "path"
-import { Channel } from "./channel"
-import { Tool } from "./tool"
+import { type Channel } from "./channel.js"
 import Path from "path"
 
 

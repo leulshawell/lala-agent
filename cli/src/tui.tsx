@@ -2,8 +2,11 @@
 import {render, Box, Text, useInput, Newline, useStdout} from "ink"
 import SelectInput from  "ink-select-input"
 import Spinner from "ink-spinner"
-import React, { JSX, useState } from "react"
-import { Channel, ChoiceInputItem, SetupResult } from "../channel"
+import React, { type JSX, useState } from "react"
+import {type Channel, type SetupResult} from "lala-agent-core"
+import { type ChoiceInputItem } from "lala-agent-core/dist/channel.js"
+
+
 import type { SpinnerName } from 'cli-spinners';
 
 
@@ -44,7 +47,7 @@ export class TUI implements Channel {
     }
 
     static Message({text, iconColor, icon}: {text: string, iconColor?: string, icon: string}){
-        return <Text><Text color={iconColor}>{icon}</Text> {text}</Text>
+        return <Text><Text color={iconColor || "white"}>{icon}</Text> {text}</Text>
     }
 
     

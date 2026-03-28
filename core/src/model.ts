@@ -1,5 +1,5 @@
-import { Config, Ollama } from "ollama"
-import { WorkSpace } from "./workspace"
+import { type Config, Ollama } from "ollama"
+import { WorkSpace } from "./workspace.js"
 
 
 export type ModelResponse = {
@@ -80,7 +80,7 @@ export class OllamaModelProvider extends Model<Ollama>{
                 {
                     model: this.model_name,
                     prompt,
-                    system: this.system_prompt,
+                    system: this.system_prompt || "",
                     stream: false,
                     think: false
                 }
