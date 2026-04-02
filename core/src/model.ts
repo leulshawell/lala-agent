@@ -3,18 +3,18 @@ import { WorkSpace } from "./workspace.js"
 
 
 export type ModelResponse = {
+
     role: "agent"
+    text: string 
+} & ({
     type: "message"
-    text: string 
 } | {
-    role: "agent"
     type: "tool_call" 
-    text: string 
     name: string 
     action: string,
     params: any   
     call_id: string
-}
+})
 
 type ResponseValidationResult = {success: true, res: ModelResponse} | {success: false, error: string}
 
@@ -73,8 +73,7 @@ export class OllamaModelProvider extends Model<Ollama>{
         this.model_name = cfg.model_name
     }
     
-    async next(req_id: string, _prompt: string, ws: WorkSpace): Promise<ModelResponse>{
-        let prompt = _prompt
+    async next(req_id: string, prompt: string, ws: WorkSpace): Promise<ModelResponse>{
         while(true) {
             const res = await this.provider.generate(
                 {
@@ -88,12 +87,9 @@ export class OllamaModelProvider extends Model<Ollama>{
 
             const isValid = Model.validate_res(res.response)
             if(isValid.success) {
-                //add both request an response to model context
-                this.add_to_context(prompt)
-                this.add_to_context(JSON.stringify(res))
+                this.add_to_context(`${prompt}\n${JSON.stringify(res)}`)
                 return isValid.res
             }else {
-                //if model respone was not in valid. the prompt the model with the error the valdation message 
                 ws.channel.message("", isValid.error, "[debug]", "blue")
                 prompt = `The message you just sent doesn't follow the JSON response schema we agreed upon.\nError: ${isValid.error}.\nFix it and try again`
             }

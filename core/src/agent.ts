@@ -35,32 +35,30 @@ export class Agent<P>{
     async start(){
         if(await this.channel.setup()){
             while (true){
+                
                 const req_id = this.workspace.get_next_call_id()
                 const prompt = await this.channel.get_text_input( req_id, "Ready >>")
-
+                
                 const message = this.generate_user_promp(prompt, req_id, this.workspace.get_next_call_id())
+                
                 const res_ = this.model.next(req_id,  message, this.workspace)
-
+                
                 this.channel.message(req_id, prompt, ">>", "green")
                 await this.channel.loading("thinking", res_)
                 const res = await res_
-
-
-                this.channel.message(req_id, JSON.stringify(res), "[debug]", "cyan") //set the response object in the channel for debugging
+                
 
                 if(res.type === "message"){
                     this.channel.message(req_id, res.text, ">>", "yellow")
                     continue
                 }
 
-                //this is the key inifinite loop that keeps going unless the model want to interact with the user
-                //or sends un invalid message that doesn't follow the sytem prompt
-                //the hope is the model won't do both of those things unless neccessary which will keep it fully automous
                 while(true){
                     const {name, action, params} = res
-                    this.channel.message(res.call_id, res.text, `[${name}]`, "red") //show the tool call
+                    this.channel.message(res.call_id, res.text, `[${name}]`, "red")
 
-                    const result = await this.call_tool(name, action, params)
+                    const result = this.call_tool(name, action, params)
+                    await this.channel.loading(`[${name}.${action}]`, result)
                     
                     const req_id = this.workspace.get_next_call_id()
                     
@@ -68,7 +66,6 @@ export class Agent<P>{
                     await this.channel.loading("thinking", res2_)
                     const res2 = await res2_
 
-                    //this means model wants to send the user a message so tool call loop breaks
                     if(res2.type === "message"){
                         this.channel.message(req_id, res2.text, ">>", "yellow")
                         break
@@ -88,10 +85,7 @@ export class Agent<P>{
         if(!tool) return tool_not_found_error(tool_name) 
 
         const action = tool.actions[act]
-
-        if(!action) {
-            return action_not_found_error(tool_name, act)
-        }
+        if(!action)  return action_not_found_error(tool_name, act)
 
         const isValid = action.validator(p, this.workspace)
 

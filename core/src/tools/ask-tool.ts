@@ -16,7 +16,7 @@ type  AskActions = {
 
 
 const askOpenHandler: ToolCallHandler<AskActions["open"]> = async (params, ws) => {
-    const ans = await ws.channel.get_text_input(ws.session.get_init_prompt(), params.question)
+    const ans = await ws.channel.get_text_input(ws.get_next_call_id(), params.question)
     return {success: true, out_type: "user_response", result: ans}
 }
 

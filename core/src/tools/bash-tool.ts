@@ -67,7 +67,8 @@ const execHandler: ToolCallHandler<BashAction["exec"]> = async (params, ws): Pro
 
 const execValidator: ToolCallValidator<BashAction["exec"]> = (params, ws: WorkSpace) => {
     params.args = params.args || []
-    const {command, args, cwd, env} = params
+    const {command, cwd, env} = params
+    //TODO: prevent some Env vars like model api keys and env vars used in this app
     if(!command)
         return param_not_found_error("bash", "exec", command)
     try{

@@ -2,6 +2,7 @@ export type ChoiceInputItem = {value: string, label: string}
 export type SetupResult = {success: true,  time_stamp: Date} | {success: false, time_stamp: Date, fail_reason: string}
 
 export interface Channel {
+    id: string
     setup_result?: SetupResult
 
     setup: ()=>Promise<boolean>
@@ -23,5 +24,5 @@ export interface Channel {
 
     message: (message_id: string, message: string, icon: string, iconColor?: string)=> Promise<void>
     close: ()=>void
-    
+
 }
