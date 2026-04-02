@@ -23,6 +23,8 @@ export type Block = {
 export class TUI implements Channel {
 
     blocks: Block[]
+    id = "tui"
+
     setup_result?: SetupResult;
     Interaction_block: Block = {
         Component: Box,
@@ -83,19 +85,20 @@ export class TUI implements Channel {
     }
 
     async loading(label: string, p: Promise<any>){
-        this.Interaction_block = {
-            type: "loader",
-            Component: TUI.Loading,
-            props: {
-                type: "dots",
-                label: label
+            this.Interaction_block = {
+                type: "loader",
+                Component: TUI.Loading,
+                props: {
+                    type: "dots",
+                    label: label
+                }
             }
-        }
-        this.render()
-        await p
+            this.render()
+            await p
     }
 
     async get_text_input(prompt_id: string, prompt: string){
+
         return await new Promise<string>((res, rej)=>{
             this.Interaction_block = {
                 key: "prompt",
