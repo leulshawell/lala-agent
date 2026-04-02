@@ -5,7 +5,7 @@
   "license": "ISC",
   "author": "leulshawell",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
     "test": "tsx ./src/agent.test.ts"

@@ -1,8 +1,9 @@
-**lala-code**
+**lala-agent**
 
-- This is a coding agent written on lala-agent-core (see ../core).
-- It uses a TUI channel to communicate with user
-- The TUI channel is a minimal terminal ui that uses Ink
-- Check out ./src/app.tsx to see how the agent is setup from lala-agent-core
-  
+Simple yet powerfull AI agent that keeps things running for you
 
+- Simple agent loop
+- Simple SOUL.txt, INSTRUCTION.txt and TOOLS.txt files to guide and controll the agent
+- Builtin tools like file, todo-list, ask, and ofcourse bash
+- You can write your own tools pretty easily (checkout the built-ins)
+-
