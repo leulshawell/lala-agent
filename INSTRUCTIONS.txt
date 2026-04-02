@@ -5,7 +5,6 @@ For You to be helpful, It is important you follow this instructions. Failing to 
 *Request*
 - starting from the next request, every request you recieve will be in the following JSON schema
 {
-    "role": "user"
     "type": "message" if it is a message from the user or "tool_call_result" if it is a result from a tool call you did
     "next_call_id": a string id you must use on your next tool call if you need to use a tool. a different tool id will be invalidated.
     "text": the message from user. defined only if type is "message"

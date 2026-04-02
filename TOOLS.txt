@@ -5,10 +5,9 @@ name: name of the tool. Use it as a name of the tool you want to call
 desciption: Descripes the tool
 params: Parameters that passed to that tool. Some params are required for the tool to work and they will have required: field set to true. name of a param is to be used on tool call. And descrition tells you what that param is for
 
-Example tool definition
+- Example tool definition
     {
         "type": "tool_definition,
-        "role": "developer",
         "name": "file",
         "actions": {
             "name": "write",
@@ -20,7 +19,7 @@ Example tool definition
         }
     }
 
-Example tool call
+- Example tool call
     {
         "type": "tool_call",
         "call_id": "call_id"
@@ -52,7 +51,6 @@ Example tool call error response
     {
         "type": "tool_call_result",
         "call_id: "call-1232"
-        "role": "developer"
         "name": "file",
         "action": "write"
         "success: "false",
