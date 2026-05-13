@@ -9,7 +9,7 @@ type  AskActions = {
     },
     open: {
         question: string,
-        }
+    }
 }
 
 
@@ -20,7 +20,7 @@ const askOpenHandler: ToolCallHandler<AskActions["open"]> = async (params, ws) =
     return {success: true, out_type: "user_response", result: ans}
 }
 
-const askOpenValidator: ToolCallValidator<AskActions["open"]> = (params, ws)=>{
+const askOpenValidator: ToolCallValidator<AskActions["open"]> = async (params, ws)=>{
     const {question} = params
     if(!question) 
         return param_not_found_error("ask", "open", "question")
@@ -34,7 +34,7 @@ const askChooseHandler: ToolCallHandler<AskActions["choose"]> = async (params, w
     return {success: true, out_type: "user_response", result: ans}
 }
 
-const askChooseValidator: ToolCallValidator<AskActions["choose"]> = (params, ws)=>{
+const askChooseValidator: ToolCallValidator<AskActions["choose"]> = async (params, ws)=>{
     const {question, options} = params
     if(!question || !options)
         return param_not_found_error("ask", "choose", question? "question": "options")

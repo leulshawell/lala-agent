@@ -22,8 +22,6 @@ export class WorkSpace{
 This Descripes Your current Workspace which is a directory with all files that describe the current work
 *Directory Structure*
 ${WorkSpace.path_to_string(this.pathstructure)}
-*Todo list*
-
 `
     }
 
@@ -36,12 +34,12 @@ ${WorkSpace.path_to_string(this.pathstructure)}
         return `some_tool_call_${Date.now()}`
     }
 
-
-    assert_in_workspace(_path: string){
+    is_in_workspace(_path: string){
         const child = path.resolve(_path)
         const relative = path.relative(this.path, child)
         
         if(relative===".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative))
-            throw new Error("Can't write outside workspace")
+            return false
+        return true
     }
 }

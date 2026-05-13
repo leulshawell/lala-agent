@@ -65,15 +65,19 @@ const execHandler: ToolCallHandler<BashAction["exec"]> = async (params, ws): Pro
 }
 
 
-const execValidator: ToolCallValidator<BashAction["exec"]> = (params, ws: WorkSpace) => {
+const execValidator: ToolCallValidator<BashAction["exec"]> = async (params, ws: WorkSpace) => {
     params.args = params.args || []
     const {command, cwd, env} = params
     //TODO: prevent some Env vars like model api keys and env vars used in this app
     if(!command)
         return param_not_found_error("bash", "exec", command)
     try{
-        if(cwd) ws.assert_in_workspace(cwd)
-        return {success: true}
+        if(cwd) 
+            if (ws.is_in_workspace(cwd)) return {success: true}
+        const allow = await ws.channel.get_choice_input("", "Running bash command outside workspace", [{label: "Yes", value: "yes"}, {label: "No", value: "no"}])
+        if(allow==="yes")
+            return {success: true}
+        return {success: false, error_type: "tool_call_error", error: "Can't run bash commands outside you workspace path"}
     }catch(e: any){
         return {success: false, error_type: "tool_call_error", error: e.message, suggested_fix: `${cwd} is outside your workspace. Check with user that it is the right path.`}
     }

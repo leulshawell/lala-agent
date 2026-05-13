@@ -34,15 +34,16 @@ const writeHandler: ToolCallHandler<FileAction["write"]> = async (params, ws): P
 }
 
 
-const writeValidator: ToolCallValidator<FileAction["write"]> = (params, ws: WorkSpace) => {
+const writeValidator: ToolCallValidator<FileAction["write"]> = async (params, ws: WorkSpace) => {
     const {path: write_path, content} = params
     if(!write_path || !content)
         return param_not_found_error("file", "write", !write_path? "path": "content")
-    try{
-        ws.assert_in_workspace(write_path)
-        return {success: true}
-    }catch(e: any){
-        return {success: false, error_type: "tool_call_error", error: e.message, suggested_fix: `${write_path} is outside your workspace. Check with user that it is the right path.`}
+
+    if(ws.is_in_workspace(write_path)) return {success: true}
+    else {
+        const allow = await ws.channel.get_choice_input("", "Allow reading outside", [{label: "Yes", value: "yes"}, {label: "No", value: "No"}])
+        if(allow === "yes") return {success: true}
+        return {success: false, error_type: "tool_call_error", error: "reading/writing outside your workspace", suggested_fix: "Try to achieve the action in your current workspace path"}
     }
 }
 
@@ -54,15 +55,16 @@ const  readHandler: ToolCallHandler<FileAction["read"]> = async (params, ws: Wor
     return {success: true, out_type: "std_out", result: content}
 }
 
-const  readValidator: ToolCallValidator<FileAction["read"]> = (params, ws: WorkSpace) => {
+const  readValidator: ToolCallValidator<FileAction["read"]> = async (params, ws: WorkSpace) => {
     const {path: read_path} = params
     if(!read_path)
         return param_not_found_error("file", "read", "path")
-    try{
-        ws.assert_in_workspace(read_path)
-        return {success: true}
-    }catch(e: any){
-        return {success: false, error_type: "tool_call_error", error: e.message, suggested_fix: `${read_path} is outside your workspace. Check with user that it is the right path.`}
+
+    if(ws.is_in_workspace(read_path)) return {success: true}
+    else {
+        const allow = await ws.channel.get_choice_input("", "Allow reading outside", [{label: "Yes", value: "yes"}, {label: "No", value: "No"}])
+        if(allow === "yes") return {success: true}
+        return {success: false, error_type: "tool_call_error", error: "reading/writing outside your workspace", suggested_fix: "Try to achieve the action in your current workspace path"}
     }
 }
 
@@ -73,15 +75,16 @@ const  createDirHandler: ToolCallHandler<FileAction["create_dir"]> = async (para
     
 }
 
-const  createDirValidator: ToolCallValidator<FileAction["create_dir"]> = (params, ws: WorkSpace) => {
+const  createDirValidator: ToolCallValidator<FileAction["create_dir"]> = async (params, ws: WorkSpace) => {
     const {path: write_path} = params
     if(!write_path)
         return param_not_found_error("file", "create_dir", "path")
-    try{
-        ws.assert_in_workspace(write_path)
-        return {success: true}
-    }catch(e: any){
-        return {success: false, error_type: "tool_call_error", error: e.message, suggested_fix: `${write_path} is outside your workspace. Can't write there.`}
+
+    if(ws.is_in_workspace(write_path)) return {success: true}
+    else {
+        const allow = await ws.channel.get_choice_input("", "Allow reading outside", [{label: "Yes", value: "yes"}, {label: "No", value: "No"}])
+        if(allow==="yes") return {success: true}
+        return {success: false, error_type: "tool_call_error", error: "reading/writing outside your workspace", suggested_fix: "Try to achieve the action in your current workspace path"}
     }
 }
 

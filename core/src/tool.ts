@@ -15,7 +15,7 @@ type _Actions = {
 }
 
 export type ToolCallHandler<A extends _Action> = (p: A, ws: WorkSpace)=>Promise<ToolCallResult>
-export type ToolCallValidator<A extends _Action> = (p: A, ws: WorkSpace)=>ToolCallValidationResult
+export type ToolCallValidator<A extends _Action> = (p: A, ws: WorkSpace)=>Promise<ToolCallValidationResult>
 
 
 type ActionEntry<

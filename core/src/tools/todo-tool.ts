@@ -36,7 +36,7 @@ const  createHandler: ToolCallHandler<TodoToolActions["create"]>= async (params,
     return {success: true, result: `task "${params.name}" created successfuly`}
 }
 
-const  createValidator: ToolCallValidator<TodoToolActions["create"]> = (params, ws: WorkSpace) => {
+const  createValidator: ToolCallValidator<TodoToolActions["create"]> = async (params, ws: WorkSpace) => {
     const {name, tasks} = params
     if(!name || !tasks)
         return param_not_found_error("todolist", "create", !name? "name": "tasks")
@@ -50,7 +50,7 @@ const  changeStatusHandler: ToolCallHandler<TodoToolActions["change_status"]>= a
     return {success: true, result: `task "${params.name}" under todolist "${params.name}" changed to ${params.status} created successfuly`}
 }
 
-const  changeStatusValidator: ToolCallValidator<TodoToolActions["change_status"]> = (params, ws: WorkSpace) => {
+const  changeStatusValidator: ToolCallValidator<TodoToolActions["change_status"]> = async (params, ws: WorkSpace) => {
     const {name, task, status} = params
     if(!name || !task || !status)
         return param_not_found_error("todolist", "change_status", !name? "name": !task? "tasks": "status")
@@ -72,7 +72,7 @@ const  readHandler: ToolCallHandler<TodoToolActions["read"]>= async (params, ws:
     return {success: true, result: tasks.toString()}
 }
 
-const  readValidator: ToolCallValidator<TodoToolActions["read"]> = (params, ws: WorkSpace) => {
+const  readValidator: ToolCallValidator<TodoToolActions["read"]> = async (params, ws: WorkSpace) => {
     const {name} = params
     if(!name)
         return param_not_found_error("todolist", "read", "name")

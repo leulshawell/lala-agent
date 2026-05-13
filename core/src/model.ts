@@ -16,6 +16,7 @@ export type ModelResponse = {
     call_id: string
 })
 
+
 type ResponseValidationResult = {success: true, res: ModelResponse} | {success: false, error: string}
 
 export abstract class Model<P>{
@@ -54,7 +55,7 @@ export abstract class Model<P>{
                     throw new Error("field \"type\" of agent response must be \"tool_call\" or \"message\"")
                 return {success: true, res: parsed}
             }
-            parsed.text = parsed.type==="message"? ".": "tool call"
+
             return {success: true, res: parsed}
 
         }catch(e: any){
@@ -86,6 +87,7 @@ export class OllamaModelProvider extends Model<Ollama>{
             )
 
             const isValid = Model.validate_res(res.response)
+            
             if(isValid.success) {
                 this.add_to_context(`${prompt}\n${JSON.stringify(res)}`)
                 return isValid.res

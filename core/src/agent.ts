@@ -87,7 +87,7 @@ export class Agent<P>{
         const action = tool.actions[act]
         if(!action)  return action_not_found_error(tool_name, act)
 
-        const isValid = action.validator(p, this.workspace)
+        const isValid = await action.validator(p, this.workspace)
 
         return isValid.success? await action.handler(p, this.workspace): isValid
         
