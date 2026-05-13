@@ -13,11 +13,11 @@ import type { Channel } from "./channel.js"
 
 export class Agent<P>{
     workspace: WorkSpace
-    model: Model<P>
+    model: Model
     channel: Channel
     tools: Map<string, Tool<string, any>>
 
-    constructor(model_client: Model<P>, channel: Channel, workspace: WorkSpace, tools: readonly Tool<string, any>[]){
+    constructor(model_client: Model, channel: Channel, workspace: WorkSpace, tools: readonly Tool<string, any>[]){
         this.model = model_client
         this.workspace = workspace
         this.channel = channel

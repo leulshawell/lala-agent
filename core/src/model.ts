@@ -19,12 +19,12 @@ export type ModelResponse = {
 
 type ResponseValidationResult = {success: true, res: ModelResponse} | {success: false, error: string}
 
-export abstract class Model<P>{
-    provider: P
+export abstract class Model{
+    provider: any
     system_prompt?: string
     context: string
 
-    constructor(pr: P){
+    constructor(pr: any){
         this.provider = pr
         this.context = ""
     }
@@ -66,7 +66,7 @@ export abstract class Model<P>{
 
 
 
-export class OllamaModelProvider extends Model<Ollama>{
+export class OllamaModelProvider extends Model{
     model_name: string
 
     constructor(cfg: (Partial<Config>) & { model_name: string}){ 
@@ -87,7 +87,7 @@ export class OllamaModelProvider extends Model<Ollama>{
             )
 
             const isValid = Model.validate_res(res.response)
-            
+
             if(isValid.success) {
                 this.add_to_context(`${prompt}\n${JSON.stringify(res)}`)
                 return isValid.res
