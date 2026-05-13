@@ -20,7 +20,7 @@ const model_client = new OllamaModelProvider({host: MODEL_URI, model_name: "qwen
 const tools = [FileTool, TodoTool, AskTool] as const
 
 //create the agent
-export const agent: Agent = new Agent(model_client, tui, ws, tools)
+export const agent = new Agent(model_client, tui, ws, tools)
 
 
 //start the agent main loop
